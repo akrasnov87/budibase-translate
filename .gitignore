@@ -1,0 +1,6 @@
+.vscode
+temp
+*-lock.json
+stop.list
+default.conf
+dev.conf
