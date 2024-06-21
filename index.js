@@ -1,12 +1,13 @@
 const args = require('./modules/conf')();
 
+const utils = require('./modules/utils');
+
 var fs = require('fs');
 var pth = require('path');
 var join = pth.join;
 
-var utils = require('./modules/utils');
 var svelteMatchs = require('./modules/svelte-matchs');
-var jsMatchs = require('./modules/svelte-js');
+var jsMatchs = require('./modules/js-matchs');
 
 var stopList = fs.existsSync(join(__dirname, 'stop.list')) ? fs.readFileSync(join(__dirname, 'stop.list')).toString().split('\n') : [];
 
@@ -113,7 +114,6 @@ if(args.file) {
                         lines[idx] = names[name].line.replace(names[name].full_match, `$_(${delimeter}${prefix + name}${delimeter})`) + `\t// ${names[name].line.trim()}`
                         break;
                 }
-                
             }
         }
     }
@@ -139,16 +139,31 @@ if(args.file) {
             items[item] = response[item];
         }
 
-        response = items;
+        fs.writeFileSync(filePath, JSON.stringify(items, null, '\t'));
+    } else {
+        fs.writeFileSync(filePath, JSON.stringify(response, null, '\t'));
     }
 
-    fs.writeFileSync(filePath, JSON.stringify(response, null, '\t'));
     console.log(`Файл ${filePath} сохранён.`);
 
-    args.output_file = args.output_file ? join(args.output_file, pth.basename(args.file)) : args.file
+    function translateFunction(callback) {
+        if(args.translate_target) {
+            var filePathTr = join(outputDir,  `${args.translate_target}.json`);
+    
+            utils.translate(filePathTr, response, () => {
+                callback();
+            })
+        } else {
+            callback();
+        }
+    }
 
-    fs.writeFileSync(args.output_file, lines.join('\n'));
-    console.log(`Файл ${args.output_file} сохранён.`);
+    translateFunction(() => {
+        args.output_file = args.output_file ? join(args.output_file, pth.basename(args.file)) : args.file
+
+        fs.writeFileSync(args.output_file, lines.join('\n'));
+        console.log(`Файл ${args.output_file} сохранён.`);
+    });
 } else {
     console.log(`Файл ${file} не найден.`)
 }

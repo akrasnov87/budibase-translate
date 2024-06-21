@@ -26,3 +26,15 @@ output_file="/budibase-translate/temp"
 path_clear="/budibase/packages/"
 </pre>
 
+### Автоперевод
+
+Если в настройках передать параметры перевода, то автоматически будет создан файл [language].ru
+
+Пример настроек:
+<pre>
+translate_key_name=
+translate_api=
+translate_token=
+translate_host=
+translate_target="ru"
+</pre>
