@@ -16,7 +16,7 @@ module.exports = function () {
     if(configValues)
         return configValues;
 
-    var confPath = args.conf || 'default';
+    var confPath = args.conf || './default.conf';
 
     function next(confPath) {
         if(confPath.indexOf('./') == 0) {
@@ -56,7 +56,7 @@ module.exports = function () {
         }
     }
 
-    next(`./${confPath}.conf`);
+    next(confPath);
 
     return configValues = args;
 } 
